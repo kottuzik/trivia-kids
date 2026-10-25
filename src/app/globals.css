@@ -18,6 +18,12 @@
   --color-control-border: var(--color-text-secondary);
   --color-focus: var(--color-text);
 
+  /* Answer feedback: dark enough for text and borders on light backgrounds (AA). */
+  --color-success: #1e7a55;
+  --color-success-bg: var(--color-mint);
+  --color-error: #b42318;
+  --color-error-bg: #fdecec;
+
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-full: 999px;
@@ -163,4 +169,9 @@ svg {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Headings that receive focus from code (new question, feedback) don't need a focus ring. */
+[tabindex="-1"]:focus {
+  outline: none;
 }

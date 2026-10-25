@@ -83,3 +83,31 @@ export function CheckIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function TrophyIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M8 4h8v5a4 4 0 0 1-8 0V4z" />
+      <path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" />
+      <path d="M12 13v4M8.5 20h7M10 17h4" />
+    </Svg>
+  );
+}
+
+export function SparkleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" />
+      <path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7L19 16z" />
+    </Svg>
+  );
+}
+
+export function RetryIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M20 12a8 8 0 1 1-2.4-5.7" />
+      <path d="M20 4v5h-5" />
+    </Svg>
+  );
+}

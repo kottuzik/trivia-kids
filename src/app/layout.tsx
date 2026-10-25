@@ -3,6 +3,7 @@ import { Nunito, Rubik } from "next/font/google";
 import { getServerPreferences } from "@/i18n/server";
 import { getDictionary } from "@/i18n/getDictionary";
 import { LOCALE_DIR } from "@/i18n/locales";
+import { GameProvider } from "@/lib/game/GameProvider";
 import { PreferencesProvider } from "@/lib/preferences";
 import "./globals.css";
 
@@ -45,7 +46,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {t.common.skipToContent}
         </a>
         <PreferencesProvider initialLocale={locale} initialAgeGroup={ageGroup}>
-          {children}
+          <GameProvider>{children}</GameProvider>
         </PreferencesProvider>
       </body>
     </html>
