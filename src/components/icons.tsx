@@ -111,3 +111,51 @@ export function RetryIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function SoundOnIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+      <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+    </Svg>
+  );
+}
+
+export function SoundOffIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+      <path d="M16 9.5l5 5M21 9.5l-5 5" />
+    </Svg>
+  );
+}
+
+// Points to the inline-end side; mirrored in RTL via CSS.
+export function SkipIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 6l7 6-7 6V6z" />
+      <path d="M13 6l7 6-7 6" />
+    </Svg>
+  );
+}
+
+export function SettingsIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+      <circle cx="16" cy="7" r="2" />
+      <circle cx="10" cy="17" r="2" />
+    </Svg>
+  );
+}
+
+export function OfflineIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M2.5 8.5a14 14 0 0 1 5-2.8M12 5.5a14 14 0 0 1 9.5 3" />
+      <path d="M6 12.5a9 9 0 0 1 4-2M14.5 10.8A9 9 0 0 1 18 12.5" />
+      <path d="M9.5 16a4 4 0 0 1 5 0M12 19.5h.01M3 3l18 18" />
+    </Svg>
+  );
+}

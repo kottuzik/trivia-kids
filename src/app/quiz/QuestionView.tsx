@@ -1,20 +1,26 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Button } from "@/components/Button";
-import { CheckIcon, CloseIcon } from "@/components/icons";
+import { CheckIcon, CloseIcon, OfflineIcon, SkipIcon } from "@/components/icons";
 import { format, getDictionary } from "@/i18n/getDictionary";
 import { LOCALE_DIR } from "@/i18n/locales";
-import { isLastQuestion } from "@/lib/game/engine";
+import { canSkip, isLastQuestion, skipsLeft } from "@/lib/game/engine";
 import { useGame } from "@/lib/game/GameProvider";
-import type { Question } from "@/lib/game/schemas";
+import type { AnswerId, Question } from "@/lib/game/schemas";
 import { usePreferences } from "@/lib/preferences";
+import { useSound } from "@/lib/sound";
 import { useFocusOnMount } from "@/lib/useFocusOnMount";
+import { useOnlineStatus } from "@/lib/useOnlineStatus";
+import { GameSettingsPanel } from "./GameSettingsPanel";
 import styles from "./page.module.css";
 
 export function QuestionView({ question }: { question: Question }) {
-  const { t, locale } = usePreferences();
-  const { state, answer, next } = useGame();
+  const { t, locale, ageGroup } = usePreferences();
+  const { state, answer, next, skip } = useGame();
+  const { play } = useSound();
+  const online = useOnlineStatus();
+  const [skipBlocked, setSkipBlocked] = useState(false);
   const selected = state.selectedAnswerId;
   const answered = selected !== null;
   const isCorrect = selected === question.correctAnswerId;
@@ -29,7 +35,28 @@ export function QuestionView({ question }: { question: Question }) {
     if (answered) feedbackRef.current?.focus();
   }, [answered]);
 
-  const total = state.settings?.questionLimit ?? 0;
+  function choose(answerId: AnswerId) {
+    play(answerId === question.correctAnswerId ? "correct" : "wrong");
+    answer(answerId);
+  }
+
+  function onSkip() {
+    if (!canSkip(state)) return;
+    setSkipBlocked(!skip());
+  }
+
+  const settings = state.settings;
+  // The shown question keeps the settings it was created with; tell the child when the
+  // next one will differ.
+  const nextDiffers =
+    settings !== null &&
+    (settings.topic !== question.topic ||
+      settings.difficulty !== question.difficulty ||
+      locale !== question.locale ||
+      ageGroup !== question.ageGroup);
+  const remainingSkips = skipsLeft(state);
+
+  const total = settings?.questionLimit ?? 0;
   const number = answered ? state.completedCount : state.completedCount + 1;
 
   return (
@@ -43,6 +70,13 @@ export function QuestionView({ question }: { question: Question }) {
         aria-hidden="true"
         style={{ "--progress": `${(state.completedCount / Math.max(total, 1)) * 100}%` } as CSSProperties}
       />
+
+      {!online && (
+        <p role="status" className={styles.offlineBanner}>
+          <OfflineIcon size={22} />
+          <span>{t.quiz.offlineBanner}</span>
+        </p>
+      )}
 
       <section className={styles.questionCard} lang={question.locale} dir={questionDir}>
         <h2 ref={questionRef} tabIndex={-1} className={styles.questionText}>
@@ -64,7 +98,7 @@ export function QuestionView({ question }: { question: Question }) {
                   type="button"
                   className={`${styles.answer} ${stateClass}`}
                   disabled={answered}
-                  onClick={() => answer(item.id)}
+                  onClick={() => choose(item.id)}
                 >
                   <span className={styles.answerLetter} aria-hidden="true">
                     {letters[index]}
@@ -120,6 +154,34 @@ export function QuestionView({ question }: { question: Question }) {
           <Button onClick={next}>{isLastQuestion(state) ? t.quiz.toSummary : t.quiz.next}</Button>
         </>
       )}
+
+      {!answered && (
+        <div className={styles.skipBlock}>
+          {/* aria-disabled keeps the button focusable, so the reason below is still read out. */}
+          <Button
+            variant="secondary"
+            onClick={onSkip}
+            aria-disabled={remainingSkips === 0 ? true : undefined}
+            aria-describedby="skips-left"
+          >
+            <SkipIcon size={20} className={styles.flipInRtl} />
+            {t.quiz.skip}
+          </Button>
+          <p id="skips-left" className={styles.skipsLeft}>
+            {remainingSkips === 0
+              ? t.quiz.noSkipsLeft
+              : remainingSkips === 1
+                ? t.quiz.skipsLeftOne
+                : format(t.quiz.skipsLeft, { n: remainingSkips })}
+          </p>
+          <p role="status" className={styles.fieldError}>
+            {skipBlocked && !online ? t.quiz.skipNeedsConnection : ""}
+          </p>
+        </div>
+      )}
+
+      {nextDiffers && <p className={styles.appliesNext}>{t.quiz.appliesNext}</p>}
+      <GameSettingsPanel />
     </>
   );
 }

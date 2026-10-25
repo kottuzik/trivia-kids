@@ -6,8 +6,11 @@ import { AppHeader } from "@/components/AppHeader";
 import { Button, ButtonLink } from "@/components/Button";
 import { ChoiceGroup, type ChoiceOption } from "@/components/ChoiceGroup";
 import { HomeIllustration } from "@/components/HomeIllustration";
+import { useNewGameConfirm } from "@/components/NewGameConfirm";
+import { format } from "@/i18n/getDictionary";
 import { LOCALES, LOCALE_NATIVE_NAME, type Locale } from "@/i18n/locales";
 import { AGE_GROUPS, type AgeGroup } from "@/lib/ageGroups";
+import { useGame } from "@/lib/game/GameProvider";
 import { usePreferences } from "@/lib/preferences";
 import styles from "./page.module.css";
 
@@ -16,6 +19,8 @@ const AGE_TONES = ["mint", "yellow", "pink"] as const;
 export function HomeScreen() {
   const { t, locale, setLocale, ageGroup, setAgeGroup } = usePreferences();
   const router = useRouter();
+  const { state, hydrated, hasActiveGame, reset } = useGame();
+  const { requestNewGame, dialog } = useNewGameConfirm();
   const ageGroupRef = useRef<HTMLFieldSetElement>(null);
   const [showAgeMessage, setShowAgeMessage] = useState(false);
 
@@ -40,8 +45,14 @@ export function HomeScreen() {
       ageGroupRef.current?.querySelector("input")?.focus();
       return;
     }
+    // A finished game has nothing left to keep: start the next one from a clean setup.
+    if (state.status === "summary") reset();
     router.push("/quiz");
   }
+
+  const savedGame = hasActiveGame && state.settings;
+  const shownQuestion =
+    state.selectedAnswerId === null ? state.completedCount + 1 : state.completedCount;
 
   return (
     <>
@@ -72,14 +83,40 @@ export function HomeScreen() {
               }}
               describedBy={showAgeMessage ? "age-message" : undefined}
             />
+            {savedGame && <p className={styles.hint}>{t.home.appliesNext}</p>}
             <p id="age-message" className={styles.message} role="status">
               {showAgeMessage ? t.home.chooseAgeFirst : ""}
             </p>
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Button onClick={handleStart}>{t.home.start}</Button>
+        {/* Waits for the saved game to be read, so "start" doesn't flip to "continue". */}
+        <div className={styles.actions} aria-busy={!hydrated}>
+          {hydrated &&
+            (savedGame ? (
+              <>
+                <section className={styles.savedGame} aria-labelledby="saved-game-title">
+                  <h2 id="saved-game-title" className={styles.savedGameTitle}>
+                    {t.home.savedGameTitle}
+                  </h2>
+                  <p>
+                    {format(t.home.savedGame, {
+                      n: shownQuestion,
+                      total: savedGame.questionLimit,
+                    })}
+                  </p>
+                  <p>
+                    {t.home.savedGameTopic} <bdi>{savedGame.topic}</bdi>
+                  </p>
+                </section>
+                <ButtonLink href="/quiz">{t.home.continueGame}</ButtonLink>
+                <Button variant="secondary" onClick={requestNewGame}>
+                  {t.home.newGame}
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleStart}>{t.home.start}</Button>
+            ))}
           <ButtonLink href="/about#how-to-play" variant="secondary">
             {t.home.howToPlay}
           </ButtonLink>
@@ -87,6 +124,7 @@ export function HomeScreen() {
             {t.home.about}
           </ButtonLink>
         </div>
+        {dialog}
       </main>
     </>
   );

@@ -198,6 +198,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
+  animation: slide-in 300ms ease-out;
 }
 
 .questionText {
@@ -266,12 +267,14 @@
   background: var(--color-success-bg);
   border-color: var(--color-success);
   border-width: 3px;
+  animation: pulse 400ms ease-out;
 }
 
 .answerWrong {
   background: var(--color-error-bg);
   border-color: var(--color-error);
   border-width: 3px;
+  animation: shake 360ms ease-in-out;
 }
 
 .answerTag {
@@ -351,6 +354,141 @@
     opacity: 1;
     transform: none;
   }
+}
+
+/* Enters from the inline-end side (the "next" direction in both RTL and LTR). */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(16px * var(--inline-dir, 1)));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:global([dir="rtl"]) .questionCard {
+  --inline-dir: -1;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* ---------- Skips, offline, in-game settings ---------- */
+
+.skipBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skipBlock [aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.skipsLeft {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+  text-align: center;
+}
+
+.skipBlock .fieldError:empty,
+.settingsSaved:empty {
+  display: none;
+}
+
+:global([dir="rtl"]) .flipInRtl {
+  transform: scaleX(-1);
+}
+
+.offlineBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 12px var(--space-2);
+  background: var(--color-primary-yellow);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+}
+
+.offlineBanner svg {
+  flex: none;
+}
+
+.appliesNext {
+  padding: 8px var(--space-2);
+  background: var(--color-lavender);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body-md);
+  font-weight: 700;
+}
+
+.settingsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settingsToggle {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: var(--space-1);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-2);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.settingsToggle:hover {
+  background: var(--color-sky);
+}
+
+.settingsSaved {
+  padding: 8px var(--space-2);
+  background: var(--color-success-bg);
+  border-radius: var(--radius-md);
+  color: var(--color-success);
+  font-weight: 700;
+  text-align: center;
+}
+
+.settingsForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  animation: pop-in 200ms ease-out;
+}
+
+.settingsHint {
+  color: var(--color-text-secondary);
 }
 
 /* ---------- Loading / error ---------- */

@@ -8,7 +8,6 @@ import { SparkleIcon } from "@/components/icons";
 import { format } from "@/i18n/getDictionary";
 import { LOCALE_NATIVE_NAME } from "@/i18n/locales";
 import type { AgeGroup } from "@/lib/ageGroups";
-import { fetchTopicSuggestions } from "@/lib/game/api";
 import { useGame } from "@/lib/game/GameProvider";
 import {
   DIFFICULTIES,
@@ -22,16 +21,13 @@ import {
 import { usePreferences } from "@/lib/preferences";
 import shared from "../shared.module.css";
 import styles from "./page.module.css";
+import { useTopicSuggestions } from "./useTopicSuggestions";
 
 const DIFFICULTY_TONES = ["mint", "yellow", "pink"] as const;
 
 type QuestionCount = `${QuestionLimit}`;
 type TopicError = "missingTopic" | "UNSAFE_TOPIC" | "INVALID_INPUT";
 type Errors = { difficulty?: boolean; count?: boolean; topic?: TopicError };
-
-type Suggestions =
-  | { status: "idle" | "loading" | "error" }
-  | { status: "done"; topics: string[] };
 
 export function GameSetup({ ageGroup }: { ageGroup: AgeGroup }) {
   const { t, locale } = usePreferences();
@@ -48,7 +44,7 @@ export function GameSetup({ ageGroup }: { ageGroup: AgeGroup }) {
       ? { topic: state.setupError === "UNSAFE_TOPIC" ? "UNSAFE_TOPIC" : "INVALID_INPUT" }
       : {},
   );
-  const [suggestions, setSuggestions] = useState<Suggestions>({ status: "idle" });
+  const { suggestions, loadSuggestions } = useTopicSuggestions();
 
   const difficultyRef = useRef<HTMLFieldSetElement>(null);
   const countRef = useRef<HTMLFieldSetElement>(null);
@@ -73,16 +69,6 @@ export function GameSetup({ ageGroup }: { ageGroup: AgeGroup }) {
     label: format(t.quiz.countOption, { n: value }),
     tone: "sky",
   }));
-
-  async function loadSuggestions() {
-    setSuggestions({ status: "loading" });
-    try {
-      const topics = await fetchTopicSuggestions({ locale, ageGroup });
-      setSuggestions({ status: "done", topics });
-    } catch {
-      setSuggestions({ status: "error" });
-    }
-  }
 
   function chooseTopic(value: string) {
     setTopic(value);
@@ -199,7 +185,7 @@ export function GameSetup({ ageGroup }: { ageGroup: AgeGroup }) {
               <Button
                 variant="secondary"
                 className={styles.suggestButton}
-                onClick={loadSuggestions}
+                onClick={() => loadSuggestions(locale, ageGroup)}
                 disabled={suggestionsBusy}
                 aria-describedby="suggestions-status"
               >

@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/getDictionary";
 import { LOCALE_DIR } from "@/i18n/locales";
 import { GameProvider } from "@/lib/game/GameProvider";
 import { PreferencesProvider } from "@/lib/preferences";
+import { SoundProvider } from "@/lib/sound";
 import "./globals.css";
 
 // Rubik for Hebrew, Nunito for English and Russian (see DESIGN.md §2.2).
@@ -46,7 +47,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {t.common.skipToContent}
         </a>
         <PreferencesProvider initialLocale={locale} initialAgeGroup={ageGroup}>
-          <GameProvider>{children}</GameProvider>
+          <SoundProvider>
+            <GameProvider>{children}</GameProvider>
+          </SoundProvider>
         </PreferencesProvider>
       </body>
     </html>

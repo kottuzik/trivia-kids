@@ -35,6 +35,8 @@ export type GameState = {
   selectedAnswerId: AnswerId | null;
   completedCount: number;
   correctCount: number;
+  // Skipped questions are replaced and never counted as completed (0–MAX_SKIPS).
+  skipCount: number;
   answeredQuestions: AnsweredQuestion[];
   seenFingerprints: string[];
   request: RequestState;
@@ -47,7 +49,12 @@ export type GameAction =
   | { type: "REQUEST_FAILED"; gameId: number; code: ClientErrorCode }
   | { type: "ANSWER"; answerId: AnswerId }
   | { type: "NEXT" }
+  | { type: "SKIP" }
+  | { type: "UPDATE_SETTINGS"; settings: Pick<GameSettings, "topic" | "difficulty"> }
+  | { type: "RESTORE"; state: GameState }
   | { type: "RESET" };
+
+export const MAX_SKIPS = 3;
 
 export const initialGameState: GameState = {
   status: "setup",
@@ -58,6 +65,7 @@ export const initialGameState: GameState = {
   selectedAnswerId: null,
   completedCount: 0,
   correctCount: 0,
+  skipCount: 0,
   answeredQuestions: [],
   seenFingerprints: [],
   request: { state: "idle" },
@@ -122,6 +130,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
       return { ...state, currentQuestion: null, selectedAnswerId: null };
 
+    case "SKIP":
+      if (!canSkip(state)) return state;
+      // The skipped question's fingerprint stays in seenFingerprints, so it never comes back.
+      // The skip is spent here, not by the request: retrying a failed request costs nothing.
+      return { ...state, skipCount: state.skipCount + 1, currentQuestion: null, selectedAnswerId: null };
+
+    case "UPDATE_SETTINGS":
+      // Only the next request uses the new settings; the shown question keeps its own.
+      if (state.status !== "playing" || !state.settings) return state;
+      return { ...state, settings: { ...state.settings, ...action.settings } };
+
+    case "RESTORE":
+      return action.state;
+
     case "RESET":
       return { ...initialGameState, gameId: state.gameId + 1, settings: state.settings };
   }
@@ -139,4 +161,17 @@ export function isLastQuestion(state: GameState) {
 // Whether the game needs a new question to be requested now.
 export function needsQuestion(state: GameState) {
   return state.status === "playing" && state.currentQuestion === null && state.request.state === "idle";
+}
+
+export function skipsLeft(state: Pick<GameState, "skipCount">) {
+  return Math.max(0, MAX_SKIPS - state.skipCount);
+}
+
+export function canSkip(state: GameState) {
+  return (
+    state.status === "playing" &&
+    state.currentQuestion !== null &&
+    state.selectedAnswerId === null &&
+    state.skipCount < MAX_SKIPS
+  );
 }

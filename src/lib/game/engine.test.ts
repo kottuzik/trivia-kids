@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { gameReducer, initialGameState, isLastQuestion, needsQuestion, successRate, type GameState } from "./engine";
+import {
+  canSkip,
+  gameReducer,
+  initialGameState,
+  isLastQuestion,
+  needsQuestion,
+  skipsLeft,
+  successRate,
+  type GameState,
+} from "./engine";
 import type { Question, QuestionLimit } from "./schemas";
 
 function makeQuestion(n: number): Question {
@@ -128,5 +137,71 @@ describe("gameReducer", () => {
     expect(late).toBe(reset);
     expect(reset.status).toBe("setup");
     expect(reset.settings?.topic).toBe("space");
+  });
+
+  it("allows three skips that replace the question without changing score or progress", () => {
+    let state = gameReducer(load(start(), 1), { type: "ANSWER", answerId: "b" });
+    state = gameReducer(state, { type: "NEXT" });
+    for (let n = 2; n <= 4; n++) {
+      state = load(state, n);
+      expect(canSkip(state)).toBe(true);
+      state = gameReducer(state, { type: "SKIP" });
+      expect(state.currentQuestion).toBeNull();
+      expect(needsQuestion(state)).toBe(true);
+    }
+    expect(state.skipCount).toBe(3);
+    expect(skipsLeft(state)).toBe(0);
+    expect(state.completedCount).toBe(1);
+    expect(state.correctCount).toBe(1);
+    expect(state.answeredQuestions).toHaveLength(1);
+    // Skipped questions stay "seen" so they are not asked again.
+    expect(state.seenFingerprints).toEqual(["question 1", "question 2", "question 3", "question 4"]);
+
+    state = load(state, 5);
+    expect(canSkip(state)).toBe(false);
+    expect(gameReducer(state, { type: "SKIP" })).toBe(state);
+  });
+
+  it("does not allow skipping an answered question", () => {
+    const state = gameReducer(load(start(), 1), { type: "ANSWER", answerId: "a" });
+    expect(gameReducer(state, { type: "SKIP" })).toBe(state);
+  });
+
+  it("does not spend another skip when the replacement fails and is retried", () => {
+    let state = gameReducer(load(start(), 1), { type: "SKIP" });
+    state = gameReducer(state, { type: "REQUEST_START", gameId: state.gameId });
+    state = gameReducer(state, { type: "REQUEST_FAILED", gameId: state.gameId, code: "NETWORK" });
+    expect(state.skipCount).toBe(1);
+    state = gameReducer(state, { type: "REQUEST_START", gameId: state.gameId });
+    state = load(state, 2);
+    expect(state.skipCount).toBe(1);
+    expect(state.currentQuestion?.id).toBe("q2");
+  });
+
+  it("applies new settings to the next question only", () => {
+    let state = load(start(10), 1);
+    const question = state.currentQuestion;
+    state = gameReducer(state, { type: "UPDATE_SETTINGS", settings: { topic: "dinosaurs", difficulty: "hard" } });
+    expect(state.currentQuestion).toBe(question);
+    expect(state.settings).toEqual({ topic: "dinosaurs", difficulty: "hard", questionLimit: 10 });
+
+    state = gameReducer(state, { type: "ANSWER", answerId: "b" });
+    state = gameReducer(state, { type: "UPDATE_SETTINGS", settings: { topic: "music", difficulty: "easy" } });
+    expect(state.selectedAnswerId).toBe("b");
+    expect(state.completedCount).toBe(1);
+    expect(state.correctCount).toBe(1);
+    expect(state.settings?.topic).toBe("music");
+  });
+
+  it("resets skips for a new game", () => {
+    let state = gameReducer(load(start(), 1), { type: "SKIP" });
+    expect(gameReducer(state, { type: "RESET" }).skipCount).toBe(0);
+    state = gameReducer(state, { type: "START", settings: { topic: "x", difficulty: "easy", questionLimit: 5 } });
+    expect(state.skipCount).toBe(0);
+  });
+
+  it("restores a saved state as is", () => {
+    const saved = gameReducer(load(start(), 1), { type: "ANSWER", answerId: "a" });
+    expect(gameReducer(initialGameState, { type: "RESTORE", state: saved })).toBe(saved);
   });
 });

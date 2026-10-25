@@ -4,7 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePreferences } from "@/lib/preferences";
-import { BackIcon, CloseIcon, HomeIcon, InfoIcon, MenuIcon, PuzzleIcon } from "./icons";
+import { useSound } from "@/lib/sound";
+import {
+  BackIcon,
+  CloseIcon,
+  HomeIcon,
+  InfoIcon,
+  MenuIcon,
+  PuzzleIcon,
+  SoundOffIcon,
+  SoundOnIcon,
+} from "./icons";
 import styles from "./AppHeader.module.css";
 
 const NAV_ITEMS = [
@@ -15,6 +25,7 @@ const NAV_ITEMS = [
 
 export function AppHeader({ title, showBack = false }: { title?: string; showBack?: boolean }) {
   const { t } = usePreferences();
+  const { soundEnabled, toggleSound } = useSound();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const menuId = useId();
@@ -55,6 +66,17 @@ export function AppHeader({ title, showBack = false }: { title?: string; showBac
       {title ? <p className={styles.title}>{title}</p> : <span />}
 
       <div className={styles.end} ref={containerRef}>
+        {/* One fixed label; the pressed state tells screen readers whether sounds are on. */}
+        <button
+          type="button"
+          className={styles.iconButton}
+          aria-pressed={soundEnabled}
+          aria-label={t.common.sounds}
+          title={soundEnabled ? t.common.soundOn : t.common.soundOff}
+          onClick={toggleSound}
+        >
+          {soundEnabled ? <SoundOnIcon /> : <SoundOffIcon />}
+        </button>
         <button
           ref={buttonRef}
           type="button"

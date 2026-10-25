@@ -3,7 +3,7 @@
   top: 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: var(--tap-target) 1fr var(--tap-target);
+  grid-template-columns: calc(var(--tap-target) * 2) 1fr calc(var(--tap-target) * 2);
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
@@ -19,6 +19,11 @@
 
 .end {
   justify-content: flex-end;
+  gap: 4px;
+}
+
+.iconButton[aria-pressed="false"] {
+  color: var(--color-text-secondary);
 }
 
 .title {

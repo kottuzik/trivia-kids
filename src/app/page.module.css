@@ -66,3 +66,25 @@
   flex-direction: column;
   gap: 12px;
 }
+
+.hint {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+}
+
+.actions[aria-busy="true"] {
+  min-height: 56px;
+}
+
+.savedGame {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px var(--space-2);
+  background: var(--color-mint);
+  border-radius: var(--radius-md);
+}
+
+.savedGameTitle {
+  font-size: var(--font-size-h3);
+}

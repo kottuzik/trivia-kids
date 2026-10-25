@@ -14,14 +14,16 @@ import styles from "./page.module.css";
 // One screen, several states: setup → (loading / question / error)* → summary.
 export function QuizScreen() {
   const { t, ageGroup } = usePreferences();
-  const { state, retry, reset } = useGame();
+  const { state, hydrated, retry } = useGame();
 
   let content;
-  if (state.status === "summary") {
+  if (!hydrated) {
+    content = <LoadingPanel title={t.quiz.loadingGame} />;
+  } else if (state.status === "summary") {
     content = <GameSummary />;
   } else if (state.status === "playing") {
     if (state.request.state === "error") {
-      content = <ErrorPanel code={state.request.code} onRetry={retry} onNewGame={reset} />;
+      content = <ErrorPanel code={state.request.code} onRetry={retry} />;
     } else if (state.currentQuestion) {
       // Keyed so focus and feedback start fresh for every question.
       content = <QuestionView key={state.currentQuestion.id} question={state.currentQuestion} />;
