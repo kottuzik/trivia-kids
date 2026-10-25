@@ -80,3 +80,7 @@ desktop.ini
 tmp/
 temp/
 *.tmp
+
+# --- Next.js generated ---
+next-env.d.ts
+.playwright-mcp/

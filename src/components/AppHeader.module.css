@@ -1,0 +1,89 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: var(--tap-target) 1fr var(--tap-target);
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.start,
+.end {
+  position: relative;
+  display: flex;
+}
+
+.end {
+  justify-content: flex-end;
+}
+
+.title {
+  text-align: center;
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.iconButton:hover {
+  background: var(--color-sky);
+}
+
+:global([dir="rtl"]) .flipInRtl {
+  transform: scaleX(-1);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  inset-inline-end: 0;
+  min-width: 200px;
+  padding: var(--space-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.menuList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menuLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-2);
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.menuLink:hover {
+  background: var(--color-sky);
+}
+
+.menuLink[aria-current="page"] {
+  background: var(--color-sky);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

@@ -1,0 +1,123 @@
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+}
+
+.options {
+  display: grid;
+  gap: 12px;
+}
+
+.row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.column {
+  grid-template-columns: 1fr;
+}
+
+.option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px var(--space-2);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+/* Compact cards when options sit side by side. */
+.row .option {
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 6px;
+  text-align: center;
+}
+
+.row .text {
+  align-items: center;
+}
+
+.option:hover {
+  transform: translateY(-1px);
+}
+
+/* Selected: thick dark border + check mark, never colour alone. */
+.option:has(.input:checked) {
+  border-color: var(--color-text);
+  box-shadow: var(--shadow-soft);
+}
+
+.option:has(.input:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.indicator {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-control-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+
+.option:has(.input:checked) .indicator {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-surface);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--font-size-body-lg);
+  font-weight: 700;
+}
+
+/* Hints sit on pastel backgrounds, so they use the primary text colour for contrast. */
+.hint {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text);
+}
+
+.blue { background: var(--color-primary-blue); }
+.green { background: var(--color-mint); }
+.yellow { background: var(--color-primary-yellow); }
+.pink { background: var(--color-primary-pink); }
+.lavender { background: var(--color-lavender); }
+.sky { background: var(--color-sky); }
+.mint { background: var(--color-mint); }
+.peach { background: var(--color-peach); }

@@ -1,0 +1,66 @@
+.cardTitle {
+  font-size: var(--font-size-h3);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--space-2);
+  background: var(--color-sky);
+  border-radius: var(--radius-lg);
+}
+
+.summaryList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0;
+}
+
+.summaryList dt {
+  font-size: var(--font-size-body-md);
+}
+
+.summaryList dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.changeLink {
+  align-self: flex-start;
+  font-weight: 700;
+  text-underline-offset: 4px;
+  min-height: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldLabel {
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+}
+
+.input {
+  min-height: 56px;
+  padding: 12px var(--space-2);
+  background: var(--color-surface);
+  border: 2px solid var(--color-control-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body-lg);
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1;
+}
+
+.note {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+}
