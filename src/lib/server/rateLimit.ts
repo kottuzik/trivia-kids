@@ -28,4 +28,5 @@ export function isRateLimited(key: string, limit: number, windowMs: number) {
 export const LIMITS = {
   topics: { limit: 15, windowMs: 10 * 60_000 },
   questions: { limit: 40, windowMs: 10 * 60_000 },
+  reports: { limit: 10, windowMs: 10 * 60_000 },
 };

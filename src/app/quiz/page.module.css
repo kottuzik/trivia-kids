@@ -618,3 +618,25 @@
   color: var(--color-success);
   font-weight: 700;
 }
+
+.reportButton svg {
+  color: var(--color-error);
+}
+
+.reported {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.reported:focus {
+  outline: none;
+}
+
+.reported:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}

@@ -1,0 +1,56 @@
+/* Long enough to need scrolling on small phones. */
+.dialog {
+  max-height: calc(100dvh - 2 * var(--space-2));
+  overflow-y: auto;
+}
+
+.fieldError {
+  color: var(--color-error);
+  font-size: var(--font-size-body-md);
+  font-weight: 700;
+}
+
+.fieldError:empty,
+.sending:empty {
+  display: none;
+}
+
+.sending {
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  text-align: center;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 12px var(--space-2);
+  border: 2px solid currentColor;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+}
+
+.result:focus {
+  outline: none;
+}
+
+.result:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.success {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.failure {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.send[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.7;
+}

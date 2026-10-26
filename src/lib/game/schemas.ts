@@ -14,6 +14,8 @@ export const TOPIC_MIN_LENGTH = 2;
 export const TOPIC_MAX_LENGTH = 60;
 export const MAX_SEEN_FINGERPRINTS = 30;
 export const FINGERPRINT_MAX_LENGTH = 200;
+// Longest accepted question parts (checked on generation and again on reports).
+export const TEXT_LIMITS = { question: 300, answer: 120, explanation: 600 };
 
 export const ANSWER_IDS = ["a", "b", "c", "d"] as const;
 export type AnswerId = (typeof ANSWER_IDS)[number];
@@ -24,6 +26,7 @@ export const API_ERROR_CODES = [
   "AI_UNAVAILABLE",
   "AI_INVALID_RESPONSE",
   "RATE_LIMITED",
+  "REPORT_SAVE_FAILED",
 ] as const;
 export type ApiErrorCode = (typeof API_ERROR_CODES)[number];
 // NETWORK is detected in the browser only (request never reached the server).

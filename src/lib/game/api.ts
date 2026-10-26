@@ -16,7 +16,13 @@ export class GameApiError extends Error {
 const QUESTION_TIMEOUT_MS = 70_000;
 const TOPICS_TIMEOUT_MS = 35_000;
 
-async function postJson(url: string, body: unknown, timeoutMs: number): Promise<unknown> {
+// `fallback` is used for timeouts and for server answers without a known error code.
+export async function postJson(
+  url: string,
+  body: unknown,
+  timeoutMs: number,
+  fallback: ClientErrorCode = "AI_UNAVAILABLE",
+): Promise<unknown> {
   if (typeof navigator !== "undefined" && navigator.onLine === false) {
     throw new GameApiError("NETWORK");
   }
@@ -31,14 +37,14 @@ async function postJson(url: string, body: unknown, timeoutMs: number): Promise<
     });
   } catch (error) {
     throw new GameApiError(
-      error instanceof DOMException && error.name === "TimeoutError" ? "AI_UNAVAILABLE" : "NETWORK",
+      error instanceof DOMException && error.name === "TimeoutError" ? fallback : "NETWORK",
     );
   }
 
   const data: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     const code = (data as { error?: { code?: unknown } } | null)?.error?.code;
-    throw new GameApiError(isApiErrorCode(code) ? code : "AI_UNAVAILABLE");
+    throw new GameApiError(isApiErrorCode(code) ? code : fallback);
   }
   return data;
 }

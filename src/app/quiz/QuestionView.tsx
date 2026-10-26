@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Button } from "@/components/Button";
-import { CheckIcon, CloseIcon, OfflineIcon, SkipIcon } from "@/components/icons";
+import { CheckIcon, CloseIcon, FlagIcon, OfflineIcon, SkipIcon } from "@/components/icons";
 import { format, getDictionary } from "@/i18n/getDictionary";
 import { LOCALE_DIR } from "@/i18n/locales";
 import { canSkip, isLastQuestion, skipsLeft } from "@/lib/game/engine";
@@ -13,6 +13,7 @@ import { useSound } from "@/lib/sound";
 import { useFocusOnMount } from "@/lib/useFocusOnMount";
 import { useOnlineStatus } from "@/lib/useOnlineStatus";
 import { GameSettingsPanel } from "./GameSettingsPanel";
+import { ReportDialog } from "./ReportDialog";
 import styles from "./page.module.css";
 
 export function QuestionView({ question }: { question: Question }) {
@@ -21,6 +22,11 @@ export function QuestionView({ question }: { question: Question }) {
   const { play } = useSound();
   const online = useOnlineStatus();
   const [skipBlocked, setSkipBlocked] = useState(false);
+  // Local to this question: the component is keyed by question id, so it resets on the next one.
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reported, setReported] = useState(false);
+  const reportButtonRef = useRef<HTMLButtonElement>(null);
+  const reportedRef = useRef<HTMLParagraphElement>(null);
   const selected = state.selectedAnswerId;
   const answered = selected !== null;
   const isCorrect = selected === question.correctAnswerId;
@@ -38,6 +44,12 @@ export function QuestionView({ question }: { question: Question }) {
   function choose(answerId: AnswerId) {
     play(answerId === question.correctAnswerId ? "correct" : "wrong");
     answer(answerId);
+  }
+
+  function closeReport() {
+    setReportOpen(false);
+    // The button is replaced by a thank-you line after a successful report.
+    requestAnimationFrame(() => (reportedRef.current ?? reportButtonRef.current)?.focus());
   }
 
   function onSkip() {
@@ -179,6 +191,30 @@ export function QuestionView({ question }: { question: Question }) {
           </p>
         </div>
       )}
+
+      {reported ? (
+        <p ref={reportedRef} tabIndex={-1} className={styles.reported}>
+          <CheckIcon size={20} />
+          {t.quiz.report.reported}
+        </p>
+      ) : (
+        <Button
+          ref={reportButtonRef}
+          variant="secondary"
+          className={styles.reportButton}
+          onClick={() => setReportOpen(true)}
+          aria-haspopup="dialog"
+        >
+          <FlagIcon size={20} />
+          {t.quiz.report.open}
+        </Button>
+      )}
+      <ReportDialog
+        question={question}
+        open={reportOpen}
+        onClose={closeReport}
+        onSent={() => setReported(true)}
+      />
 
       {nextDiffers && <p className={styles.appliesNext}>{t.quiz.appliesNext}</p>}
       <GameSettingsPanel />

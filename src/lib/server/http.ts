@@ -8,6 +8,7 @@ const STATUS: Record<ApiErrorCode, number> = {
   UNSAFE_TOPIC: 422,
   RATE_LIMITED: 429,
   AI_INVALID_RESPONSE: 502,
+  REPORT_SAVE_FAILED: 502,
   AI_UNAVAILABLE: 503,
 };
 

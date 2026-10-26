@@ -159,3 +159,11 @@ export function OfflineIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function FlagIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 21V4M5 4h11l-2 4 2 4H5" />
+    </Svg>
+  );
+}

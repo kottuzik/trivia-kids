@@ -1,5 +1,6 @@
 import type { Locale } from "@/i18n/locales";
 import { fingerprint } from "./fingerprint";
+import { TEXT_LIMITS as LIMITS } from "./schemas";
 
 // The structured output we ask the model for (before shuffling and ids are added).
 export type RawQuestion = {
@@ -19,8 +20,6 @@ export type ValidationIssue =
   | "correct_mismatch"
   | "already_seen"
   | "wrong_language";
-
-const LIMITS = { question: 300, answer: 120, explanation: 600 };
 
 const SCRIPT: Record<Locale, RegExp> = {
   he: /\p{Script=Hebrew}/u,
