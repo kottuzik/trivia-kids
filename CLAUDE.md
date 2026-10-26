@@ -59,3 +59,4 @@
 > Claude ממלא זאת ברגע שהאפליקציה יכולה לרוץ (בדרך כלל בסיום Milestone 1), ומעדכן אם משהו משתנה.
 - **הרצה (dev):** `npm run dev` (ואז לפתוח http://localhost:3000)
 - **בדיקות (test):** `npm run lint && npm run typecheck && npm test && npm run build`
+- **בדיקות מקצה לקצה (E2E):** `npm run test:e2e` (בונה ומריץ את האפליקציה על פורט 3100; בפעם הראשונה: `npx playwright install chromium`)

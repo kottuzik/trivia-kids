@@ -90,134 +90,139 @@ export function QuestionView({ question }: { question: Question }) {
         </p>
       )}
 
-      <section className={styles.questionCard} lang={question.locale} dir={questionDir}>
-        <h2 ref={questionRef} tabIndex={-1} className={styles.questionText}>
-          {question.text}
-        </h2>
+      {/* On computers the question sits beside the feedback and actions (two columns). */}
+      <div className={styles.playArea}>
+        <section className={styles.questionCard} lang={question.locale} dir={questionDir}>
+          <h2 ref={questionRef} tabIndex={-1} className={styles.questionText}>
+            {question.text}
+          </h2>
 
-        <ul className={styles.answers} aria-label={t.quiz.answersLabel} lang={locale}>
-          {question.answers.map((item, index) => {
-            const isThisCorrect = answered && item.id === question.correctAnswerId;
-            const isThisWrongChoice = answered && item.id === selected && !isCorrect;
-            const stateClass = isThisCorrect
-              ? styles.answerCorrect
-              : isThisWrongChoice
-                ? styles.answerWrong
-                : "";
-            return (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  className={`${styles.answer} ${stateClass}`}
-                  disabled={answered}
-                  onClick={() => choose(item.id)}
-                >
-                  <span className={styles.answerLetter} aria-hidden="true">
-                    {letters[index]}
-                  </span>
-                  <span className={styles.answerText} lang={question.locale} dir={questionDir}>
-                    {item.text}
-                  </span>
-                  {isThisCorrect && (
-                    <span className={`${styles.answerTag} ${styles.tagCorrect}`}>
-                      <CheckIcon size={18} />
-                      {t.quiz.correctAnswer}
+          <ul className={styles.answers} aria-label={t.quiz.answersLabel} lang={locale}>
+            {question.answers.map((item, index) => {
+              const isThisCorrect = answered && item.id === question.correctAnswerId;
+              const isThisWrongChoice = answered && item.id === selected && !isCorrect;
+              const stateClass = isThisCorrect
+                ? styles.answerCorrect
+                : isThisWrongChoice
+                  ? styles.answerWrong
+                  : "";
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    className={`${styles.answer} ${stateClass}`}
+                    disabled={answered}
+                    onClick={() => choose(item.id)}
+                  >
+                    <span className={styles.answerLetter} aria-hidden="true">
+                      {letters[index]}
                     </span>
-                  )}
-                  {isThisWrongChoice && (
-                    <span className={`${styles.answerTag} ${styles.tagWrong}`}>
-                      <CloseIcon size={18} />
-                      {t.quiz.yourAnswer}
+                    <span className={styles.answerText} lang={question.locale} dir={questionDir}>
+                      {item.text}
                     </span>
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+                    {isThisCorrect && (
+                      <span className={`${styles.answerTag} ${styles.tagCorrect}`}>
+                        <CheckIcon size={18} />
+                        {t.quiz.correctAnswer}
+                      </span>
+                    )}
+                    {isThisWrongChoice && (
+                      <span className={`${styles.answerTag} ${styles.tagWrong}`}>
+                        <CloseIcon size={18} />
+                        {t.quiz.yourAnswer}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
-      {answered && (
-        <>
-          <section
-            className={`${styles.feedback} ${isCorrect ? styles.feedbackCorrect : styles.feedbackWrong}`}
-            aria-labelledby="feedback-title"
-          >
-            <div className={styles.feedbackHead}>
-              <span className={styles.feedbackIcon} aria-hidden="true">
-                {isCorrect ? <CheckIcon size={28} /> : <CloseIcon size={28} />}
-              </span>
-              <h2 id="feedback-title" ref={feedbackRef} tabIndex={-1}>
-                {isCorrect ? t.quiz.correct : t.quiz.incorrect}
-              </h2>
-            </div>
-            {!isCorrect && (
-              <p className={styles.correctLine}>
-                {format(t.quiz.correctAnswerIs, { answer: "" })}
-                <bdi lang={question.locale}>{correctAnswer.text}</bdi>
+        <div className={styles.playSide}>
+          {answered && (
+            <>
+              <section
+                className={`${styles.feedback} ${isCorrect ? styles.feedbackCorrect : styles.feedbackWrong}`}
+                aria-labelledby="feedback-title"
+              >
+                <div className={styles.feedbackHead}>
+                  <span className={styles.feedbackIcon} aria-hidden="true">
+                    {isCorrect ? <CheckIcon size={28} /> : <CloseIcon size={28} />}
+                  </span>
+                  <h2 id="feedback-title" ref={feedbackRef} tabIndex={-1}>
+                    {isCorrect ? t.quiz.correct : t.quiz.incorrect}
+                  </h2>
+                </div>
+                {!isCorrect && (
+                  <p className={styles.correctLine}>
+                    {format(t.quiz.correctAnswerIs, { answer: "" })}
+                    <bdi lang={question.locale}>{correctAnswer.text}</bdi>
+                  </p>
+                )}
+                <h3 className={styles.explanationTitle}>{t.quiz.explanationTitle}</h3>
+                <p lang={question.locale} dir={questionDir}>
+                  {question.explanation}
+                </p>
+              </section>
+
+              <Button onClick={next}>{isLastQuestion(state) ? t.quiz.toSummary : t.quiz.next}</Button>
+            </>
+          )}
+
+          {!answered && (
+            <div className={styles.skipBlock}>
+              {/* aria-disabled keeps the button focusable, so the reason below is still read out. */}
+              <Button
+                variant="secondary"
+                onClick={onSkip}
+                aria-disabled={remainingSkips === 0 ? true : undefined}
+                aria-describedby="skips-left"
+              >
+                <SkipIcon size={20} className={styles.flipInRtl} />
+                {t.quiz.skip}
+              </Button>
+              <p id="skips-left" className={styles.skipsLeft}>
+                {remainingSkips === 0
+                  ? t.quiz.noSkipsLeft
+                  : remainingSkips === 1
+                    ? t.quiz.skipsLeftOne
+                    : format(t.quiz.skipsLeft, { n: remainingSkips })}
               </p>
-            )}
-            <h3 className={styles.explanationTitle}>{t.quiz.explanationTitle}</h3>
-            <p lang={question.locale} dir={questionDir}>
-              {question.explanation}
+              <p role="status" className={styles.fieldError}>
+                {skipBlocked && !online ? t.quiz.skipNeedsConnection : ""}
+              </p>
+            </div>
+          )}
+
+          {reported ? (
+            <p ref={reportedRef} tabIndex={-1} className={styles.reported}>
+              <CheckIcon size={20} />
+              {t.quiz.report.reported}
             </p>
-          </section>
+          ) : (
+            <Button
+              ref={reportButtonRef}
+              variant="secondary"
+              className={styles.reportButton}
+              onClick={() => setReportOpen(true)}
+              aria-haspopup="dialog"
+            >
+              <FlagIcon size={20} />
+              {t.quiz.report.open}
+            </Button>
+          )}
+          <ReportDialog
+            question={question}
+            open={reportOpen}
+            onClose={closeReport}
+            onSent={() => setReported(true)}
+          />
 
-          <Button onClick={next}>{isLastQuestion(state) ? t.quiz.toSummary : t.quiz.next}</Button>
-        </>
-      )}
-
-      {!answered && (
-        <div className={styles.skipBlock}>
-          {/* aria-disabled keeps the button focusable, so the reason below is still read out. */}
-          <Button
-            variant="secondary"
-            onClick={onSkip}
-            aria-disabled={remainingSkips === 0 ? true : undefined}
-            aria-describedby="skips-left"
-          >
-            <SkipIcon size={20} className={styles.flipInRtl} />
-            {t.quiz.skip}
-          </Button>
-          <p id="skips-left" className={styles.skipsLeft}>
-            {remainingSkips === 0
-              ? t.quiz.noSkipsLeft
-              : remainingSkips === 1
-                ? t.quiz.skipsLeftOne
-                : format(t.quiz.skipsLeft, { n: remainingSkips })}
-          </p>
-          <p role="status" className={styles.fieldError}>
-            {skipBlocked && !online ? t.quiz.skipNeedsConnection : ""}
-          </p>
+          {nextDiffers && <p className={styles.appliesNext}>{t.quiz.appliesNext}</p>}
+          <GameSettingsPanel />
         </div>
-      )}
-
-      {reported ? (
-        <p ref={reportedRef} tabIndex={-1} className={styles.reported}>
-          <CheckIcon size={20} />
-          {t.quiz.report.reported}
-        </p>
-      ) : (
-        <Button
-          ref={reportButtonRef}
-          variant="secondary"
-          className={styles.reportButton}
-          onClick={() => setReportOpen(true)}
-          aria-haspopup="dialog"
-        >
-          <FlagIcon size={20} />
-          {t.quiz.report.open}
-        </Button>
-      )}
-      <ReportDialog
-        question={question}
-        open={reportOpen}
-        onClose={closeReport}
-        onSent={() => setReported(true)}
-      />
-
-      {nextDiffers && <p className={styles.appliesNext}>{t.quiz.appliesNext}</p>}
-      <GameSettingsPanel />
+      </div>
     </>
   );
 }

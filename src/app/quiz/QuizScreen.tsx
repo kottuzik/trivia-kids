@@ -50,7 +50,7 @@ export function QuizScreen() {
   return (
     <>
       <AppHeader showBack />
-      <main id="main" className={shared.main}>
+      <main id="main" className={`${shared.main} ${shared.wide}`}>
         {content}
       </main>
     </>

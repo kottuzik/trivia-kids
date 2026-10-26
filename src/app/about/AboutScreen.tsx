@@ -14,7 +14,7 @@ export function AboutScreen() {
   return (
     <>
       <AppHeader showBack />
-      <main id="main" className={shared.main}>
+      <main id="main" className={`${shared.main} ${shared.wide} ${styles.main}`}>
         <h1>{t.about.heading}</h1>
 
         <section className={`${shared.card} ${styles.intro}`} aria-labelledby="app-name">

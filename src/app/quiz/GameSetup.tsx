@@ -96,26 +96,28 @@ export function GameSetup({ ageGroup }: { ageGroup: AgeGroup }) {
 
   return (
     <>
-      <h1>{t.quiz.heading}</h1>
+      <div className={styles.setupHead}>
+        <h1>{t.quiz.heading}</h1>
 
-      <section className={styles.summary} aria-labelledby="choices-title">
-        <h2 id="choices-title" className={styles.cardTitle}>
-          {t.quiz.yourChoices}
-        </h2>
-        <dl className={styles.summaryList}>
-          <div>
-            <dt>{t.quiz.languageLabel}</dt>
-            <dd lang={locale}>{LOCALE_NATIVE_NAME[locale]}</dd>
-          </div>
-          <div>
-            <dt>{t.quiz.ageLabel}</dt>
-            <dd>{t.home.ageGroups[ageGroup]}</dd>
-          </div>
-        </dl>
-        <Link href="/" className={styles.changeLink}>
-          {t.quiz.change}
-        </Link>
-      </section>
+        <section className={styles.summary} aria-labelledby="choices-title">
+          <h2 id="choices-title" className={styles.cardTitle}>
+            {t.quiz.yourChoices}
+          </h2>
+          <dl className={styles.summaryList}>
+            <div>
+              <dt>{t.quiz.languageLabel}</dt>
+              <dd lang={locale}>{LOCALE_NATIVE_NAME[locale]}</dd>
+            </div>
+            <div>
+              <dt>{t.quiz.ageLabel}</dt>
+              <dd>{t.home.ageGroups[ageGroup]}</dd>
+            </div>
+          </dl>
+          <Link href="/" className={styles.changeLink}>
+            {t.quiz.change}
+          </Link>
+        </section>
+      </div>
 
       <form className={styles.setupForm} onSubmit={onSubmit} noValidate>
         <div className={shared.card}>

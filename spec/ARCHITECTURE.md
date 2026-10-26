@@ -235,3 +235,18 @@ Next.js Route Handlers on Vercel (Node.js)
 **הקשר:** §2.9 דורש לנהל את קוד הסקריפט ב-GitHub ולפרוס אותו בנפרד מ-Vercel, ל-Development ול-Production.
 **החלטה:** `apps-script/Code.gs` ו-`appsscript.json` נשמרים ב-Repository ומודבקים ידנית לעורך Apps Script (ללא `clasp`), לפי `apps-script/README.md`. פונקציית `setup()` יוצרת את לשונית `Reports`, הכותרות והרשימה הנפתחת `חדש`/`טופל`. השרת שולח `{ secret, report }` ב-POST, עוקב אחרי ה-Redirect של Google ומצליח רק אם הגוף הוא `{ ok: true, reportId }` זהה. `Code.gs` נבדק ב-Vitest בתוך `node:vm` עם תחליפים לשירותי Google.
 **השלכות:** אין כלי או התחברות נוספים; עדכון הסקריפט דורש הדבקה ו-"New version" ב-Manage deployments כדי לשמור על אותה כתובת.
+
+### ADR-12: Service Worker ששומר קבצים קבועים בלבד
+**הקשר:** §2.8 מתיר Cache רק לנכסים סטטיים. הדפים (`/`, `/quiz`, `/about`) מרונדרים בשרת לפי Cookies (ADR-1). נשקלה שמירת עותק של הדפים כדי שאפליקציה מותקנת תיפתח גם בלי אינטרנט; המשתמש בחר שלא.
+**החלטה:** `public/sw.js` נכתב ידנית, בלי ספרייה. הוא שומר Cache-first רק את `/_next/static/*` (קוד, CSS וגופנים, עם שמות שמשתנים בכל build), את `/icons/*`, את `/apple-icon.png` ואת `/favicon.ico`. בקשות שאינן GET, `/api/*`, ניווטים בין דפים והמניפסט אינם עוברים דרכו. שם ה-Cache כולל גרסה, ו-Caches ישנים נמחקים ב-`activate`. הרישום מתבצע רק ב-Production build, כדי לא להפריע ל-`npm run dev`. `sw.js` מוגש עם `Cache-Control: no-store` כדי שעדכונים יגיעו מיד. המניפסט (`src/app/manifest.ts`) לוקח את השם, השפה והכיווניות מ-Cookie השפה.
+**השלכות:** האפליקציה ניתנת להתקנה ונטענת מהר, ואין סיכון ששאלות או דיווחים יישמרו ב-Cache. פתיחת האפליקציה המותקנת ללא אינטרנט מציגה את דף השגיאה של הדפדפן. מענה Offline על שאלה שכבר נטענה עובד כל עוד הלשונית פתוחה (Milestone 3). שינוי מדיניות ה-Cache מחייב העלאת הגרסה ב-`CACHE`.
+
+### ADR-13: כותרות אבטחה ו-CSP בלי Nonce
+**הקשר:** §2.8 דורש CSP מתאים. Next.js מטמיע סקריפטים קטנים בתוך ה-HTML. CSP מבוסס Nonce מחייב Middleware ומונע Cache של דפים, וזה סיבוך מיותר לאפליקציה בלי תוכן של צד שלישי.
+**החלטה:** `next.config.ts` שולח בכל הנתיבים CSP עם `default-src 'self'`, `script-src 'self' 'unsafe-inline'` (ב-Development נוסף `'unsafe-eval'`), `connect-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, ובנוסף `X-Content-Type-Options: nosniff`, `Referrer-Policy` ו-`Permissions-Policy` (מצלמה, מיקרופון ומיקום כבויים).
+**השלכות:** הדפדפן לא יטען סקריפטים, פונטים או חיבורים מאתרים אחרים, והאתר לא יוצג בתוך iframe. `'unsafe-inline'` משאיר הגנה חלשה יותר מפני הזרקת סקריפט; הסיכון נמוך כי React מקודד טקסט ואין HTML חיצוני. הוספת שירות חיצוני בעתיד מחייבת עדכון ה-CSP.
+
+### ADR-14: בדיקות E2E ב-Playwright מול API מדומה
+**הקשר:** §2.11 דורש E2E לזרימות המשחק, הדיווח, השחזור וה-PWA, ובדיקות WCAG אוטומטיות. בדיקה מול OpenAI ו-Apps Script אמיתיים עולה כסף, איטית, לא יציבה, ועלולה לכתוב לגיליון.
+**החלטה:** `@playwright/test` עם Chromium בלבד, מול `next build` + `next start` (פורט 3100), בשלושה גדלים: מובייל (Pixel 7), טאבלט (iPad Mini) ו-Desktop. כל בקשה ל-`/api/*` מיורטת בדפדפן (`e2e/fixtures/mockApi.ts`) ומקבלת שאלות דמה, שגיאות לפי הצורך ואישור דיווח. נגישות נבדקת ב-`@axe-core/playwright` (תגיות WCAG 2.0–2.2 A/AA) בכל מסך ומצב ובשלוש השפות, יחד עם בדיקות מקלדת, Focus גלוי שאינו מוסתר, Reflow ברוחב 320px ו-Reduced Motion. ה-Service Worker חסום בבדיקות (כדי שהיירוט יעבוד), חוץ מ-`pwa.spec.ts`. ב-CI רץ Job נפרד `e2e` בלי Secrets.
+**השלכות:** הבדיקות לא נוגעות ב-OpenAI או בגיליונות. איכות השאלות האמיתיות ושמירת שורה בגיליון נבדקות ידנית מול Development. Safari/WebKit וקורא מסך אמיתי לא נבדקים אוטומטית ונשארים לבדיקה ידנית.

@@ -44,3 +44,32 @@
 .mint { background: var(--color-mint); }
 .blue { background: var(--color-primary-blue); }
 .lavender { background: var(--color-lavender); }
+
+/* Computers: intro cards side by side and the steps in two columns. */
+@media (min-width: 1024px) {
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .main > h1,
+  .main > [id="how-to-play"],
+  .main > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .main > :last-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    /* Fill the first column, then the second, so the steps still read in order. */
+    grid-template-rows: repeat(5, auto);
+    grid-auto-flow: column;
+    gap: var(--space-2) var(--space-4);
+  }
+}

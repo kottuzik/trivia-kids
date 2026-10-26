@@ -88,3 +88,49 @@
 .savedGameTitle {
   font-size: var(--font-size-h3);
 }
+
+/* Computers: the welcome side next to the choices, so the whole screen fits without scrolling. */
+@media (min-width: 1024px) {
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: var(--space-2) var(--space-4);
+    max-width: var(--content-width-wide);
+    padding-top: var(--space-2);
+  }
+
+  .hero {
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: 80px;
+  }
+
+  .card {
+    grid-column: 2;
+    padding: var(--space-2);
+  }
+
+  .actions {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  /* The saved-game box and a lone "start" button take the full width; the rest pair up. */
+  .actions > section,
+  .actions > button:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .savedGame {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: var(--space-2);
+  }
+
+  .savedGameTitle {
+    flex-basis: 100%;
+  }
+}

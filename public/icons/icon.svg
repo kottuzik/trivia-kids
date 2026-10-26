@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full-bleed background, so the same art works as a maskable icon. -->
+  <rect width="512" height="512" fill="#CFEFFF"/>
+  <ellipse cx="256" cy="470" rx="300" ry="90" fill="#E6F7D9"/>
+  <circle cx="256" cy="250" r="150" fill="#A7C7FF"/>
+  <path d="M196 200C196 160 224 136 258 136C294 136 318 160 318 194C318 226 296 240 276 252C262 261 256 272 256 290V302"
+        fill="none" stroke="#2B2B2B" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="360" r="24" fill="#2B2B2B"/>
+  <path d="M392 120l9 20 20 9-20 9-9 20-9-20-20-9 20-9z" fill="#FFB3D9"/>
+  <path d="M120 128l7 15 15 7-15 7-7 15-7-15-15-7 15-7z" fill="#FFE4BC"/>
+  <path d="M400 330l6 13 13 6-13 6-6 13-6-13-13-6 13-6z" fill="#D6C8FF"/>
+</svg>

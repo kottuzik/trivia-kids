@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/getDictionary";
 import { LOCALE_DIR } from "@/i18n/locales";
 import { GameProvider } from "@/lib/game/GameProvider";
 import { PreferencesProvider } from "@/lib/preferences";
+import { ServiceWorkerRegister } from "@/lib/pwa/ServiceWorkerRegister";
 import { SoundProvider } from "@/lib/sound";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { default: t.meta.appName, template: `%s · ${t.meta.appName}` },
     description: t.meta.description,
+    appleWebApp: { capable: true, title: t.meta.appName, statusBarStyle: "default" },
   };
 }
 
@@ -51,6 +53,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <GameProvider>{children}</GameProvider>
           </SoundProvider>
         </PreferencesProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

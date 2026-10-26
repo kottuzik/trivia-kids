@@ -154,17 +154,23 @@
 .progressRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 4px var(--space-2);
 }
 
 .progress {
-  font-size: var(--font-size-h3);
+  font-size: 26px;
+  line-height: 1;
 }
 
+/* Same height as the progress heading, centred on the same line. */
 .topicTag {
-  padding: 2px 12px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 12px;
+  line-height: 1;
   background: var(--color-primary-yellow);
   border-radius: var(--radius-full);
   font-size: var(--font-size-body-md);
@@ -173,7 +179,8 @@
 
 .progressBar {
   height: 10px;
-  margin-top: calc(var(--space-2) * -1);
+  /* Sits 8px under the progress row (the screen's gap is --space-3). */
+  margin-top: calc(8px - var(--space-3));
   background: var(--color-border);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -639,4 +646,98 @@
 .reported:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+/* ---------- Two-column layout on computers ---------- */
+
+.setupHead,
+.playArea,
+.playSide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Computers: wider screens use their width so the game fits without scrolling. */
+@media (min-width: 1024px) {
+  /* Setup: title and choices in one row, difficulty beside the count and topic. */
+  .setupHead {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .setupHead > h1 {
+    flex: none;
+  }
+
+  .summary {
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px var(--space-3);
+  }
+
+  .summaryList {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .setupForm > :first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .setupForm .group:first-child {
+    grid-row: span 2;
+  }
+
+  /* Question: the question and its answers (2 × 2) beside the feedback and actions. */
+  .playArea {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+    gap: var(--space-3) var(--space-4);
+  }
+
+  .answers {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .answer {
+    height: 100%;
+  }
+
+  /* Half-width answers: the "your answer" / "correct answer" tag goes under the text. */
+  .answerText {
+    flex-basis: calc(100% - 44px);
+  }
+
+  .answerTag {
+    padding-inline-start: 44px;
+  }
+
+  /* Summary: trophy beside the title, mistakes in two columns. */
+  .summaryHero {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: var(--space-2);
+    padding: var(--space-2);
+    text-align: start;
+  }
+
+  .trophy {
+    grid-row: span 2;
+  }
+
+  .mistakes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }

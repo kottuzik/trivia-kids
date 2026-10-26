@@ -121,3 +121,12 @@
 .sky { background: var(--color-sky); }
 .mint { background: var(--color-mint); }
 .peach { background: var(--color-peach); }
+
+/* Computers have room for the radio beside the label, which keeps the cards short. */
+@media (min-width: 1024px) {
+  .row .option {
+    flex-direction: row;
+    min-height: 56px;
+    padding: 8px;
+  }
+}

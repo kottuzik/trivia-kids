@@ -55,6 +55,10 @@
 @media (min-width: 1024px) {
   :root {
     --content-width: 640px;
+    /* Computers: screens use two columns and tighter spacing so they fit without scrolling. */
+    --content-width-wide: 1040px;
+    --space-3: 16px;
+    --space-4: 24px;
   }
 }
 
