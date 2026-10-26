@@ -8,7 +8,7 @@
 | | Development (בדיקות) | Production (אמיתי) |
 |---|---|---|
 | גיליון | "טריוויה קידס — דיווחים (Development)" | "טריוויה קידס — דיווחים (Production)" |
-| לאן הכתובת והסוד הולכים | `.env` במחשב + Vercel **Preview** | Vercel **Production** — רק ב-Milestone 6 |
+| לאן הכתובת והסוד הולכים | `.env` במחשב + Vercel **Preview** | Vercel **Production** — לפי `docs/production.md` |
 
 דיווחי בדיקה נשלחים **רק** ל-Development.
 
@@ -71,7 +71,7 @@ openssl rand -hex 32
    ```
 2. ב-Vercel: Project → **Settings → Environment Variables** → הוסיפו את שני המשתנים עם ערכי Development, וסמנו **רק Preview**.
 
-**Production:** בינתיים רק שומרים את הכתובת והסוד במקום בטוח. הם נכנסים ל-Vercel Production ב-Milestone 6.
+**Production:** לפי המדריך `docs/production.md` (קודם עדכון ובדיקת הסקריפט, ואז Vercel Production).
 
 ## עדכון הקוד בעתיד (בלי לשנות את הכתובת)
 
